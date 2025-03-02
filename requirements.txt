@@ -1,0 +1,8 @@
+asgiref==3.8.1
+Django==3.2.16
+django-bootstrap5==22.2
+django_debug_toolbar==3.8.1
+pillow==11.1.0
+pytz==2025.1
+sqlparse==0.5.3
+typing_extensions==4.12.2

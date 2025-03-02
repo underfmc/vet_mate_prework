@@ -1,0 +1,57 @@
+{% load static %}
+
+<header>
+    <nav class="navbar shadow-sm">
+      <div class="container">
+        {% with request.resolver_match.view_name as view_name %}
+          <div class="logo">
+            <a class="nav-link {% if view_name == 'homepage:index' %} active {% endif %}"
+            href="{% url 'homepage:index' %}">
+              VetMate
+            </a>
+          </div>
+          <ul class="nav nav-pills d-flex flex-wrap">
+            <li class="nav-item card-sm">
+              <a class="nav-link {% if view_name == 'vets:vets_list' %} active {% endif %}"
+                href="{% url 'vets:vets_list' %}">
+                Ветеринары
+              </a>
+            </li>
+  
+            <!-- Это блок ссылок для авторизованного пользователя -->
+            {% if user.is_authenticated %}
+              <li class="nav-item card-sm">
+                <a class="nav-link {% if view_name == 'pets:pets_list' %} active {% endif %}"
+                  href="{% url 'pets:pets_list' %}">
+                  Мои животные
+                </a>
+              </li>
+              <li class="nav-item card-sm">
+                  <a class="nav-link {% if view_name == 'users:profile' %} active {% endif %}" href="{% url 'users:profile' user.username %}">
+                    <b>{{ user.username }} <img src="{{ user.photo.url }}" class="navbar-brand rounded-circle" width="30" height="40"></b>
+                  </a>
+              </li>
+              <li class="nav-item card-sm">
+                <a class="nav-link{% if view_name == 'password_change' %} active {% endif %}"
+                  href="{% url 'password_change' %}">Изменить пароль</a>
+              </li>
+              <li class="nav-item card-sm">
+                <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+              </li>
+            <!-- Конец блока ссылок для авторизованного пользователя -->
+
+            <!-- А здесь блок ссылок для неавторизованного пользователя -->
+            {% else %}
+                <li class="nav-item card-sm">
+                    <a class="nav-link{% if view_name == 'login' %} active {% endif %}" href="{% url 'login' %}">Войти</a>
+                </li>
+                <li class="nav-item card-sm">
+                  <a class="nav-link{% if view_name == 'users:registration' %} active {% endif %}" href="{% url 'users:registration' %}">Регистрация</a>
+                </li>        
+            {% endif %}
+            <!-- Конец блока ссылок для неавторизованного пользователя -->
+          </ul>
+        {% endwith %}
+      </div>
+    </nav>
+  </header> 

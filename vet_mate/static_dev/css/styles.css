@@ -1,0 +1,238 @@
+body {
+    font-family: sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f9f9f9;
+    color: #333;
+}
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+header {
+    background-color: #fff;
+    padding: 20px 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header .container{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+nav a {
+    margin-left: 20px;
+    text-decoration: none;
+    color: #333;
+}
+nav a:hover {
+  color: #007bff;
+}
+.hero {
+    background-color: #f0f8ff;
+    padding: 100px 0;
+    text-align: center;
+}
+.hero h1 {
+  font-size: 2.5em;
+  margin-bottom: 10px;
+}
+.hero p {
+    font-size: 1.2em;
+    margin-bottom: 20px;
+    color: #555;
+}
+.hero .buttons{
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+.button{
+  background-color: #007bff;
+  color: white;
+  padding: 10px 20px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+.button:hover{
+  background-color: #0056b3;
+}
+.categories {
+    padding: 50px 0;
+}
+.categories h2{
+  text-align: center;
+  margin-bottom: 30px;
+}
+.card-container{
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+.card{
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: calc(33% - 20px);
+}
+.card img{
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-bottom: 10px;
+}
+.card h3{
+  margin-bottom: 10px;
+}
+.care-section, .shop-section, .forum-section, .vet-section {
+  padding: 50px 0;
+  text-align: center;
+  background-color: #eee;
+}
+.care-section h2, .shop-section h2, .forum-section h2, .vet-section h2{
+    margin-bottom: 30px;
+}
+.care-card{
+  width: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+}
+
+@media (max-width: 768px){
+  .card{
+    width: calc(50% - 20px);
+  }
+  header .container{
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .hero .buttons{
+    flex-direction: column;
+    align-items: center;
+  }
+}
+@media (max-width: 576px) {
+  .card {
+    width: 100%;
+  }
+}
+
+/* Новые стили */
+.profile {
+    padding: 50px 0;
+}
+.profile h2{
+  text-align: center;
+  margin-bottom: 20px;
+}
+.profile-info, .profile-actions{
+  background-color: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      margin-bottom: 20px;
+}
+.profile-actions ul{
+    padding-left: 20px;
+}
+.profile-actions li{
+      margin-bottom: 10px;
+}
+.pets{
+  padding: 50px 0;
+    text-align: center;
+}
+.pets h2{
+  margin-bottom: 20px;
+}
+.pet-card{
+      width: 250px;
+     text-align: center;
+}
+.pet-card a{
+  text-decoration: none;
+  color: #333;
+}
+.pet-card a:hover{
+    color: #007bff;
+}
+.pet-info{
+    padding: 50px 0;
+    text-align: center;
+}
+.pet-details img{
+    max-width: 300px;
+     border-radius: 8px;
+    object-fit: cover;
+        margin-bottom: 20px;
+
+}
+
+footer {
+    background: #333;
+    color: white;
+    padding: 20px 0;
+}
+
+footer .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+footer a {
+    color: white;
+    text-decoration: none;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+footer p {
+    margin: 5px 0;
+}
+
+footer h3 {
+    margin-bottom: 10px;
+}
+
+footer .footer-social {
+    display: flex;
+    gap: 10px;
+}
+
+footer .footer-social img {
+    height: 30px;
+    width: 30px;
+}
+#logo {
+    color: inherit; /* Наследует цвет текста от родителя */
+    text-decoration: none; /* Убирает подчеркивание */
+}
+#logo:hover, #logo:focus {
+    text-decoration: none; /* Отключает подчеркивание */
+    color: inherit; /* Не меняет цвет при наведении */
+}
+#logo:visited, #logo:active {
+    color: inherit; /* Не изменяет цвет после клика */
+}

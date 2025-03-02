@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'img/favicon/favicon.ico'%}" type="image/x-icon">
+    <link rel="icon" type="image/png" sizes="16x16" href="{% static 'img/favicon/favicon_16x16.png'%}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{% static 'img/favicon/favicon_32x32.png'%}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{% static 'img/favicon/favicon_48x48.png'%}">
+    <link rel="icon" type="image/png" sizes="64x64" href="{% static 'img/favicon/favicon_64x64.png'%}">
+    <link rel="icon" type="image/png" sizes="128x128" href="{% static 'img/favicon/favicon_128x128.png'%}">
+    <link rel="icon" type="image/png" sizes="256x256" href="{% static 'img/favicon/favicon_256x256.png'%}">
+
+    <!-- Подключаем стили -->
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    {% load django_bootstrap5 %}
+    {% bootstrap_css %}
+</head>
+<body>
+    <header>
+        {% include 'includes/header.html' %}
+    </header>
+    <main>
+        <section class="container justify-content-center">
+          {% block content %}Контента пока нет :({% endblock %}
+        </section>
+      </main>
+    <footer>
+        {% include 'includes/footer.html' %}
+    </footer>
+</body>
+</html>

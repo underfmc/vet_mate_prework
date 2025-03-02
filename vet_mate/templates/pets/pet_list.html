@@ -1,0 +1,42 @@
+{% extends 'base.html'%}
+
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<title>VetMate | Добавленные питомцы</title>
+<section class="pets">
+  <div class="container justify-content-center">
+    <div class="row justify-content-center md-4">
+      <div class="card justify-content-center">
+        <h2>Мои животные</h2>
+      </div>
+    </div>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-4 g-4 justify-content-center">
+      {% for pet in page_obj %}
+      <div class="col">
+        <div class="card h-100" style="width: 18rem;">
+         <div class="card-body">
+          <a href="{% url 'pets:pet_detail' pet.slug %}">
+            <img class="card-img-top" src="{{ pet.image.url }}" alt="Изображение питомца">
+              <h3 class="card-title">{{ pet.name }}</h3>
+             <p class="card-text">Вид: {{pet.species}}</p>
+            </a>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <section class="row justify-content-center g-4">
+        <div class="card justify-content-center">
+          <h3>😿 Ни одного питомца пока нет 😿</h3>
+        </div>
+      </section>
+      {% endfor %}
+    </div>
+    {% include "includes/paginator.html" %}
+  </div>
+  <div class="d-grid gap-1 col-3 mx-auto mt-5">
+    <a href="{% url 'pets:add_pet' %}" role="button" class="btn btn-outline-primary">Добавить питомца</a>
+  </div>
+</section>
+{% endblock content%}

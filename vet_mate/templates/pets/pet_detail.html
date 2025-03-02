@@ -1,0 +1,285 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+<title>VetMate | О питомце</title>
+<section class="row justify-content-center">
+    <div class="card col-10">
+        <div class="card-header">
+            <h2>Информация о животном</h2>
+        </div>
+        <div class="card-body">
+            <!-- Вкладки -->
+            <ul class="nav nav-tabs justify-content-center" id="petTab" role="tablist">
+                <li class="nav-item">
+                    <button class="nav-link active" id="info-tab" data-bs-toggle="tab" data-bs-target="#info" type="button">Информация</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="feeding-tab" data-bs-toggle="tab" data-bs-target="#feeding" type="button">График кормления</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="health-tab" data-bs-toggle="tab" data-bs-target="#health" type="button">Здоровье</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="vaccination-tab" data-bs-toggle="tab" data-bs-target="#vaccination" type="button">Прививки</button>
+                </li>
+            </ul>
+
+            <div class="tab-content mt-3">
+                <!-- Вкладка Информация -->
+                <div class="tab-pane fade show active" id="info">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="{{ pet.image.url }}" alt="Фотография питомца" class="img-fluid rounded" style="max-width: 300px;">
+                            <h3 class="mt-3">Кличка: {{ pet.name }}</h3>
+                            <hr>
+                            <h4>Анализ здоровья</h4>
+                            <p>{{ health_report|safe }}</p>
+                        </div>
+                        <div class="col-md-8">
+                            <p><strong>Вид:</strong> {{ pet.species }}</p>
+                            <p><strong>Порода:</strong> {{ pet.breed }}</p>
+                            <p><strong>Пол:</strong> {{ pet.sex }}</p>
+                            <p><strong>Возраст:</strong> {{ age }}</p>
+                            <p><strong>Особенности:</strong> {{ pet.characteristic }}</p>
+                            <p><strong>Вес:</strong> {{ pet.weight }} кг</p>
+                            <p><strong>Высота:</strong> {{ pet.height }} см</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Вкладка Рекомендации и графики -->
+                <div class="tab-pane fade" id="feeding">
+                    <h4>График кормления</h4>
+                    <p><strong>Рекомендуемый корм:</strong> {{ feeding.recommended_food }}</p>
+                    <p><strong>Ближайшее кормление:</strong> {{ feeding.next_meal_time }}</p>
+                
+                    <h5>Ежедневный график:</h5>
+                    <ul class="list-group">
+                        {% if feeding is not None %}
+                            {% for meal in feeding.calculate_schedule %}
+                                <li class="list-group-item">{{ meal.time }} - {{ feeding.food }}</li>
+                            {% empty %}
+                                <li class="list-group-item">Нет данных о кормлении</li>
+                            {% endfor %}
+                        {% else %}
+                            <li class="list-group-item">Нет данных о кормлении</li>
+                        {% endif %}
+                    </ul>
+                
+                    <!-- Форма для изменения корма -->
+                    <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}" class="mt-3">
+                        {% csrf_token %}
+                        <label for="food_brand"><strong>Выбранный корм:</strong></label>
+                        <select id="food_brand" name="food_brand" class="form-control mb-2 text-center">
+                            {% for food in foods %}
+                                <option value="{{ food.id }}" {% if feeding.food.id == food.id %}selected{% endif %}>{{ food.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-outline-success">Сохранить</button>
+                    </form>
+                </div>
+
+                <div class="tab-pane fade" id="health">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Болезни</h5>
+                            <ul class="list-group">
+                            {% for disease in diseases %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ disease.name }}
+                                    <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="remove_disease" value="{{ disease.id }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                    </form>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">Нет зарегистрированных болезней</li>
+                            {% endfor %}
+                            </ul>
+                    
+                            <form method="POST" class="mt-3">
+                                {% csrf_token %}
+                                <label for="disease_id">Добавить болезнь:</label>
+                                <select name="disease_id" class="form-control text-center">
+                                    {% for disease in all_diseases %}
+                                        <option value="{{ disease.id }}">{{ disease.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-outline-success mt-2">Добавить</button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5>Назначенные лекарства</h5>
+                            <ul class="list-group">
+                                {% for medication in medications %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ medication.name }}
+                                        <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="remove_medication" value="{{ medication.id }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                        </form>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item">Нет назначенных лекарств</li>
+                                {% endfor %}
+                            </ul>
+                    
+                            <form method="POST" class="mt-3">
+                                {% csrf_token %}
+                                <label for="medication_id">Добавить лекарство:</label>
+                                <select name="medication_id" class="form-control text-center">
+                                    {% for medication in all_medications %}
+                                        <option value="{{ medication.id }}">{{ medication.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-outline-success mt-2">Добавить</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="vaccination">
+                    <h4>Прививки</h4>
+
+                    <!-- Ближайшая прививка -->
+                    {% if next_vaccination_date %}
+                        <p><strong>Ближайшая прививка:</strong> {{ next_vaccination_date|date:"d E Y" }}</p>
+                    {% else %}
+                        <p>Все прививки сделаны.</p>
+                    {% endif %}
+
+                    <!-- Годовой график прививок -->
+                    <h5>Годовой график</h5>
+                    <ul class="list-group">
+                        {% for vaccine in available_vaccines %}
+                            <li class="list-group-item">{{ vaccine.name }} - {{ vaccine.age_in_weeks }} нед.</li>
+                        {% empty %}
+                            <p>Все прививки сделаны.</p>
+                        {% endfor %}
+                    </ul>
+
+                    <!-- Сделанные прививки -->
+                    <h5>Сделанные прививки</h5>
+                    {% if done_vaccinations %}
+                        <ul class="list-group">
+                            {% for vaccination in done_vaccinations %}
+                                <li class="list-group-item">{{ vaccination.vaccine__name }} - {{ vaccination.date }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p>Питомец еще не привит.</p>
+                    {% endif %}
+
+                    <!-- Форма для добавления прививки -->
+                    <h5>Добавить прививку</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="add_vaccine" value="true">
+                        <div class="mb-3">
+                            <label for="vaccine_id">Выберите вакцину</label>
+                            <select class="form-control" name="vaccine_id" required>
+                                {% for vaccine in available_vaccines %}
+                                    <option value="{{ vaccine.id }}">{{ vaccine.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="vaccination_date">Дата</label>
+                            <input type="date" class="form-control" name="vaccination_date" required>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success">Добавить</button>
+                    </form>
+                </div>
+                
+                <div class="tab-pane fade" id="health">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Болезни</h5>
+                            <ul class="list-group">
+                            {% for disease in diseases %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ disease.name }}
+                                    <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="remove_disease" value="{{ disease.id }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                    </form>
+                                </li>
+                            {% empty %}
+                                <li class="list-group-item">Нет зарегистрированных болезней</li>
+                            {% endfor %}
+                            </ul>
+                    
+                            <form method="POST" class="mt-3">
+                                {% csrf_token %}
+                                <label for="disease_id">Добавить болезнь:</label>
+                                <select name="disease_id" class="form-control">
+                                    {% for disease in all_diseases %}
+                                        <option value="{{ disease.id }}">{{ disease.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-outline-success mt-2">Добавить</button>
+                            </form>
+                        </div>
+
+                        <div class="col-md-6">
+                            <h5>Назначенные лекарства</h5>
+                            <ul class="list-group">
+                                {% for medication_id, medication_name in medications %}
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        {{ medication_name }}
+                                        <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="remove_medication" value="{{ medication_id }}">
+                                            <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                        </form>
+                                    </li>
+                                {% empty %}
+                                    <li class="list-group-item">Нет назначенных лекарств</li>
+                                {% endfor %}
+                            </ul>
+                    
+                            <form method="POST" class="mt-3">
+                                {% csrf_token %}
+                                <label for="medication_id">Добавить лекарство:</label>
+                                <select name="medication_id" class="form-control">
+                                    {% for medication in all_medications %}
+                                        <option value="{{ medication.id }}">{{ medication.name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <button type="submit" class="btn btn-outline-success mt-2">Добавить</button>
+                            
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        let activeTab = localStorage.getItem("activeTab");
+    
+        if (activeTab) {
+            let tabElement = document.querySelector(`[data-bs-target="${activeTab}"]`);
+            if (tabElement) {
+                new bootstrap.Tab(tabElement).show();
+            }
+        }
+    
+        document.querySelectorAll('.nav-link[data-bs-toggle="tab"]').forEach(tab => {
+            tab.addEventListener("click", function () {
+                localStorage.setItem("activeTab", this.getAttribute("data-bs-target"));
+            });
+        });
+    });
+</script>
+
+{% endblock content %}
