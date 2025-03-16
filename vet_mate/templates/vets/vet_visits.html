@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>{{ title }}</h1>
+    
+    <!-- Форма для фильтрации визитов -->
+    <form method="get" class="mb-3">
+        <div class="row">
+            <div class="col-md-4">
+                <select name="pet" class="form-select">
+                    <option value="">Все животные</option>
+                    {% for pet in user.pets.all %}
+                        <option value="{{ pet.id }}" {% if request.GET.pet == pet.id|stringformat:"s" %}selected{% endif %}>{{ pet.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <select name="veterinarian" class="form-select">
+                    <option value="">Все ветеринары</option>
+                    {% for vet in Veterinarian.objects.all %}
+                        <option value="{{ vet.id }}" {% if request.GET.veterinarian == vet.id|stringformat:"s" %}selected{% endif %}>{{ vet.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Фильтровать</button>
+            </div>
+        </div>
+    </form>
+
+    <!-- Таблица визитов -->
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Дата</th>
+                <th>Животное</th>
+                <th>Ветеринар</th>
+                <th>Причина</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit in visits %}
+            <tr>
+                <td>{{ visit.date }}</td>
+                <td>{{ visit.pet.name }}</td>
+                <td>{{ visit.veterinarian.name }}</td>
+                <td>{{ visit.reason }}</td>
+                <td>
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <input type="hidden" name="delete_visit" value="{{ visit.id }}">
+                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5" class="text-center">Нет записей</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Форма для добавления нового визита -->
+    <h2>Добавить новый визит</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Добавить визит</button>
+    </form>
+</div>
+{% endblock content %}

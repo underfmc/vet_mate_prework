@@ -24,6 +24,9 @@
                 <li class="nav-item">
                     <button class="nav-link" id="vaccination-tab" data-bs-toggle="tab" data-bs-target="#vaccination" type="button">Прививки</button>
                 </li>
+                <li class="nav-item">
+                    <button class="nav-link" id="visits-tab" data-bs-toggle="tab" data-bs-target="#visits" type="button">Визиты к ветеринару</button>
+                </li>
             </ul>
 
             <div class="tab-content mt-3">
@@ -52,8 +55,8 @@
                 <!-- Вкладка Рекомендации и графики -->
                 <div class="tab-pane fade" id="feeding">
                     <h4>График кормления</h4>
-                    <p><strong>Рекомендуемый корм:</strong> {{ feeding.recommended_food }}</p>
-                    <p><strong>Ближайшее кормление:</strong> {{ feeding.next_meal_time }}</p>
+                    <p><strong>Рекомендуемый корм:</strong> {{ recommended_food }}</p>
+                    <p><strong>Ближайшее кормление:</strong> {{ next_meal_time }}</p>
                 
                     <h5>Ежедневный график:</h5>
                     <ul class="list-group">
@@ -156,7 +159,9 @@
                     <h5>Годовой график</h5>
                     <ul class="list-group">
                         {% for vaccine in available_vaccines %}
-                            <li class="list-group-item">{{ vaccine.name }} - {{ vaccine.age_in_weeks }} нед.</li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                {{ vaccine.name }} - {{ vaccine.age_in_weeks }} нед.
+                            </li>
                         {% empty %}
                             <p>Все прививки сделаны.</p>
                         {% endfor %}
@@ -167,7 +172,14 @@
                     {% if done_vaccinations %}
                         <ul class="list-group">
                             {% for vaccination in done_vaccinations %}
-                                <li class="list-group-item">{{ vaccination.vaccine__name }} - {{ vaccination.date }}</li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ vaccination.vaccine__name }} - {{ vaccination.date }}
+                                    <form method="POST" action="{% url 'pets:pet_detail' pet.slug %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="remove_vaccination" value="{{ vaccination.id }}">
+                                        <button type="submit" class="btn btn-outline-danger btn-sm">Удалить</button>
+                                    </form>
+                                </li>
                             {% endfor %}
                         </ul>
                     {% else %}
@@ -257,10 +269,71 @@
                         </div>
                     </div>
                 </div>
+                <div class="tab-pane fade" id="visits">
+                    <h4>Визиты к ветеринару</h4>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Ветеринар</th>
+                                <th>Причина</th>
+                                <th>Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for visit in visits %}
+                            <tr>
+                                <td>{{ visit.date }}</td>
+                                <td>{{ visit.veterinarian.name }}</td>
+                                <td>{{ visit.reason }}</td>
+                                <td>
+                                    <form method="post" style="display:inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="remove_visit" value="{{ visit.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Нет записей</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <h5>Добавить визит</h5>
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="add_visit" value="true">
+                        <div class="mb-3">
+                            <label for="veterinarian_id">Выберите ветеринара</label>
+                            <select class="form-control" name="veterinarian_id" required>
+                                {% for veterinarian in veterinarians %}
+                                    <option value="{{ veterinarian.id }}">{{ veterinarian.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="visit_date">Дата</label>
+                            <input type="date" class="form-control" name="visit_date" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="reason">Причина</label>
+                            <textarea class="form-control" name="reason" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-outline-success">Добавить</button>
+                    </form>
+                </div>
+            </div>
             </div>
         </div>
     </div>
 </section>
+
+<div class="text-center mt-4 mb-4">
+    <a href="{% url 'pets:pet_edit' pet.slug %}" class="btn btn-outline-primary">Редактировать информацию</a>
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>

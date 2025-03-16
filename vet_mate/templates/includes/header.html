@@ -1,6 +1,6 @@
 {% load static %}
 
-<header>
+<header class="p-3 mb-3 border-bottom">
     <nav class="navbar shadow-sm">
       <div class="container">
         {% with request.resolver_match.view_name as view_name %}
@@ -27,16 +27,18 @@
                 </a>
               </li>
               <li class="nav-item card-sm">
-                  <a class="nav-link {% if view_name == 'users:profile' %} active {% endif %}" href="{% url 'users:profile' user.username %}">
-                    <b>{{ user.username }} <img src="{{ user.photo.url }}" class="navbar-brand rounded-circle" width="30" height="40"></b>
+                <div class="dropdown text-end">
+                  <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="{{ user.photo.url }}" alt="mdo" width="32" height="32" class="rounded-circle">
                   </a>
-              </li>
-              <li class="nav-item card-sm">
-                <a class="nav-link{% if view_name == 'password_change' %} active {% endif %}"
-                  href="{% url 'password_change' %}">Изменить пароль</a>
-              </li>
-              <li class="nav-item card-sm">
-                <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                  <ul class="dropdown-menu text-small" style="max-width: 200px;">
+                    <li><a class="dropdown-item" href="{% url 'users:profile' user.username %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Профиль</a></li>
+                    <li><a class="dropdown-item" href="{% url 'vets:vet_visits' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Записи на прием</a></li>
+                    <li><a class="dropdown-item" href="{% url 'password_change' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Изменить пароль</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="{% url 'logout' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Выйти</a></li>
+                  </ul>
+                </div>
               </li>
             <!-- Конец блока ссылок для авторизованного пользователя -->
 

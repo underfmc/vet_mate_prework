@@ -1,13 +1,119 @@
-{% extends 'base.html'%}
+{% extends 'base.html' %}
 
 {% load static %}
 
 {% block content %}
-<title>VetMate | Ветеринары рядом</title>
-<section id="vets-list">
-    <h2>Ветеринары рядом</h2>
-</section>
-<section id="map">
-    <h2>Карта клиник</h2>
-</section>
-{% endblock content%}
+<title>VetMate | Ветеринары и клиники рядом</title>
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-4">
+            <h2>Ветеринары и клиники рядом</h2>
+            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="clinics-tab" data-toggle="tab" href="#clinics" role="tab">Клиники</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="vets-tab" data-toggle="tab" href="#vets" role="tab">Ветеринары</a>
+                </li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane fade show active" id="clinics" role="tabpanel">
+                    <ul class="list-group list-group-flush">
+                        {% for clinic in clinics %}
+                            <li class="list-group-item clinic-item" data-clinic-id="{{ clinic.id }}">
+                                <strong>{{ clinic.name }}</strong> - {{ clinic.address }}
+                            </li>
+                            <hr>
+                        {% empty %}
+                            <li class="list-group-item">Клиники не найдены</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="tab-pane fade" id="vets" role="tabpanel">
+                    <ul class="list-group list-group-flush">
+                        {% for vet in veterinarians %}
+                            <li class="list-group-item vet-item" data-vet-id="{{ vet.id }}">
+                                <span class="vet-name">{{ vet.name }}</span> - 
+                                <span class="vet-clinic">{% if vet.clinic %}{{ vet.clinic.name }}{% else %}Клиника не указана{% endif %}</span>
+                            </li>
+                            <hr>
+                        {% empty %}
+                            <li class="list-group-item">Ветеринары не найдены</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8 card">
+            <h2 class="card-header">Подробная информация</h2>
+            <div id="details" class="card-body rounded p-3" style="min-height: 200px;">
+                <p>Выберите клинику или ветеринара для просмотра подробной информации.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', function() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                // Проверка, чтобы избежать бесконечной перезагрузки
+                if (!window.location.search.includes('location')) {
+                    // Перенаправление на URL с параметром location
+                    var locationParam = latitude + ',' + longitude;
+                    window.location.href = window.location.pathname + '?location=' + locationParam;
+                }
+            }, function() {
+                alert('Не удалось определить местоположение.');
+            });
+        }
+
+        // Обработчик кликов для клиник
+        document.querySelectorAll('.clinic-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                var clinicId = this.getAttribute('data-clinic-id');
+                fetch(`clinic/${clinicId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var detailsHtml = `<h3 class="card-subtitle mb-2">${data.name}</h3>` +
+                                         `<p>Адрес: ${data.address}</p>` +
+                                         `<p>Ветеринары:</p><ul class="list-group list-group-flush">`;
+                        data.veterinarians.forEach(vet => {
+                            detailsHtml += `<li class="list-group-item vet-item" data-vet-id="${vet.id}">${vet.name}</li>`;
+                        });
+                        detailsHtml += `</ul>`;
+                        document.getElementById('details').innerHTML = detailsHtml;
+                    });
+            });
+        });
+
+        // Обработчик кликов для ветеринаров
+        document.querySelectorAll('.vet-item').forEach(function(item) {
+            item.addEventListener('click', function() {
+                var vetId = this.getAttribute('data-vet-id');
+                fetch(`${vetId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var detailsHtml = `<img class="card-img-top img-fluid" src="${data.photo_url}" alt="Фото ветеринара">` +
+                                         `<h3 class="card-subtitle mb-2">${data.name}</h3>` +
+                                         `<p class="card-text">Адрес: ${data.address}</p>` +
+                                         `<p class="card-text clinic-item" data-clinic-id="${data.clinic_id}">Клиника: ${data.clinic_name}</p>`;
+                        document.getElementById('details').innerHTML = detailsHtml;
+                    });
+            });
+        });
+    });
+
+    // Добавление обработчиков событий для вкладок
+    $('#myTab a').on('click', function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+    });
+</script>
+{% endblock content %}

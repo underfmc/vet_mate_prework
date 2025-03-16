@@ -12,4 +12,8 @@ class VeterinarianForm(forms.ModelForm):
 class VetVisitForm(forms.ModelForm):
     class Meta:
         model = VetVisit
-        fields = '__all__'
+        fields = ['pet', 'veterinarian', 'date', 'reason']
+        exclude = ('user', 'is_active')
+        widgets = {
+            'date': forms.DateInput(attrs={'type': 'date'})
+        }

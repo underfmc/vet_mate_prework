@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <article class="blog-post text-center">
+                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid mb-3 mx-auto d-block">
+                <h2 class="blog-post-title">{{ post.title }}</h2>
+                <p class="blog-post-meta">Категория: <a href="{% url 'posts:post_list' %}?category={{ post.category.url_name }}">{{ post.category.name }}</a></p>
+                <p>{{ post.content }}</p>
+            </article>
+            <a href="{% url 'posts:post_list' %}?category={{ category }}" class="btn btn-secondary mt-3">Назад к списку</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -3,7 +3,7 @@ from django.urls import path
 from . import views
 
 
-appname = 'about'
+app_name = 'about'
 
 urlpatterns = [
     path('privacy/', views.PrivacyView.as_view(), name='privacy'),

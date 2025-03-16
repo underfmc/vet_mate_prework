@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<title>VetMate | Статьи</title>
+<div class="container mt-4">
+    <h1>Список статей</h1>
+    <form method="get" class="form-inline mb-3">
+        <div class="form-group">
+            <label for="category">Категория:</label>
+            <select name="category" id="category" class="form-control ml-2">
+                <option value="all">Все</option>
+                {% for cat in categories %}
+                <option value="{{ cat.url_name }}" {% if cat.url_name == category %}selected{% endif %}>{{ cat.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary ml-2">Фильтр</button>
+    </form>
+
+        <div class="row mb-2">
+            {% for post in page_obj %}
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary">{{ post.category.name }}</strong>
+                        <h3 class="mb-0">{{ post.title }}</h3>
+                        <p class="card-text text-muted">{{ post.content|truncatechars:100 }}</p>
+                        <a href="{% url 'posts:post_detail' post.id %}?category={{ category }}" class="stretched-link">Читать далее</a>
+                    </div>
+                    <div class="col-auto d-none d-lg-block">
+                        <img src="{{ post.image.url }}" alt="{{ post.title }}" class="img-fluid">
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <p>Статьи не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+
+    {% include 'includes/paginator.html' %}
+</div>
+{% endblock %}

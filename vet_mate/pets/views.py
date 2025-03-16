@@ -10,6 +10,7 @@ from django.urls import reverse_lazy
 from .models import (Pet, Breed, Disease, Medicine, Food,
                      VaccinationSchedule, Vaccine, Vaccination,
                      FeedingSchedule)
+from vets.models import Veterinarian, VetVisit
 from .forms import PetForm
 from .utils import (calculate_age, generate_health_report)
 
@@ -28,7 +29,7 @@ def load_breeds(request):
 def pet_detail(request, slug):
     pet = get_object_or_404(
         Pet.objects.select_related(
-            "breed", "species", "feeding_schedule__food"
+            "breed", "species",
         ).prefetch_related(
             Prefetch("vaccinations", queryset=Vaccination.objects.only(
                 "id", "vaccine__name", "date")),
@@ -48,7 +49,9 @@ def pet_detail(request, slug):
     recommended_vaccine, next_vaccination_date = (
         rec_and_date[1] if rec_and_date else (None, None))
 
-    feeding = pet.feeding_schedule
+    feeding = FeedingSchedule.objects.filter(pet=pet).first()
+    recommended_food = feeding.food if feeding else None
+    next_meal_time = feeding.next_meal_time if feeding else None
 
     pet_disease_ids = {d["id"] for d in pet.diseases.values("id")}
     pet_medication_ids = {m["id"] for m in pet.medications.values("id")}
@@ -69,6 +72,14 @@ def pet_detail(request, slug):
             if pet.medications.filter(id=medication_id).exists():
                 pet.medications.remove(medication_id)
 
+        elif vet_visit_id := post_data.get("remove_visit"):
+            if pet.vet_visit.filter(id=vet_visit_id).exists():
+                VetVisit.objects.filter(id=vet_visit_id).delete()
+
+        elif vaccination_id := post_data.get("remove_vaccination"):
+            if pet.vaccinations.filter(id=vaccination_id).exists():
+                Vaccination.objects.filter(id=vaccination_id).delete()
+
         elif post_data.get("add_vaccine"):
             vaccine_id = post_data.get("vaccine_id")
             if Vaccine.objects.filter(id=vaccine_id).exists():
@@ -79,6 +90,15 @@ def pet_detail(request, slug):
                     completed=True
                 )
                 vaccination_schedule.calculate_schedule(pet)
+
+        elif post_data.get("add_visit"):
+            veterinarian_id = post_data.get("veterinarian_id")
+            visit_date = post_data.get("visit_date")
+            reason = post_data.get("reason")
+            if Veterinarian.objects.filter(id=veterinarian_id).exists():
+                VetVisit.objects.create(
+                    pet=pet, veterinarian_id=veterinarian_id, date=visit_date,
+                    reason=reason, user=request.user)
 
         else:
             if disease_id := post_data.get("disease_id"):
@@ -104,6 +124,9 @@ def pet_detail(request, slug):
     health_report = generate_health_report(
             pet, diseases, available_medications,
             vaccination_schedule)
+    veterinarians = list(Veterinarian.objects.all().only('id', 'name'))
+    visits = VetVisit.objects.filter(pet=pet).select_related(
+        "veterinarian").only("id", "veterinarian__name", "date", "reason")
 
     context = {
         "pet": pet,
@@ -121,6 +144,10 @@ def pet_detail(request, slug):
         "all_diseases": available_diseases,
         "all_medications": available_medications,
         "health_report": health_report,
+        "veterinarians": veterinarians,
+        "visits": visits,
+        "recommended_food": recommended_food,
+        "next_meal_time": next_meal_time,
     }
 
     return render(request, "pets/pet_detail.html", context)

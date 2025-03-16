@@ -20,24 +20,24 @@
       <h2>Основные разделы</h2>
       <div class="card-container">
           <div class="card">
-              <a href="pet.html">
+              <a href="{% url 'posts:post_list' %}?category=cat">
                   <img src="{% static 'img/homepage/cat.webp' %}" alt="Уход за кошками">
                   <h3>Уход за кошками</h3>
                   <p>Полезные статьи и советы</p>
               </a>
           </div>
           <div class="card">
-              <a href="pet.html">
+              <a href="{% url 'posts:post_list' %}?category=dog">
                   <img src="{% static 'img/homepage/dog.webp' %}" alt="Уход за собаками">
                   <h3>Уход за собаками</h3>
                   <p>Полезные статьи и советы</p>
               </a>
           </div>
           <div class="card">
-               <a href="pet.html">
+              <a href="{% url 'posts:post_list' %}?category=birds">
                   <img src="{% static 'img/homepage/parrot.webp' %}" alt="Уход за птицами">
                   <h3>Уход за птицами</h3>
-                   <p>Полезные статьи и советы</p>
+                  <p>Полезные статьи и советы</p>
               </a>
           </div>
       </div>
