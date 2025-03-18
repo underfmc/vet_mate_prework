@@ -1,13 +1,15 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load django_bootstrap5 %}
 
 {% block content %}
+<title>VetMate | Записи на прием</title>
 <div class="container mt-4">
     <h1>{{ title }}</h1>
     
     <!-- Форма для фильтрации визитов -->
-    <form method="get" class="mb-3">
-        <div class="row">
+    <form method="get" class="mb-4">
+        <div class="row g-3">
             <div class="col-md-4">
                 <select name="pet" class="form-select">
                     <option value="">Все животные</option>
@@ -19,12 +21,10 @@
             <div class="col-md-4">
                 <select name="veterinarian" class="form-select">
                     <option value="">Все ветеринары</option>
-                    {% for vet in Veterinarian.objects.all %}
-                        <option value="{{ vet.id }}" {% if request.GET.veterinarian == vet.id|stringformat:"s" %}selected{% endif %}>{{ vet.name }}</option>
-                    {% endfor %}
+                    <!-- Ветеринары будут динамически подгружаться через AJAX -->
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-4 d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">Фильтровать</button>
             </div>
         </div>
@@ -65,11 +65,80 @@
     </table>
 
     <!-- Форма для добавления нового визита -->
-    <h2>Добавить новый визит</h2>
-    <form method="post">
+    <h2 class="mt-5">Добавить новый визит</h2>
+    <form method="post" class="mb-4">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" class="btn btn-success">Добавить визит</button>
+        <div class="row">
+            <div class="col-md-6">
+                <!-- Все поля формы, кроме причины -->
+                {% for field in form %}
+                    {% if field.name != 'reason' %}
+                        <div class="mb-3">
+                            {% bootstrap_field field %}
+                        </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+            <div class="col-md-6">
+                <!-- Поле причины -->
+                <div class="mb-3">
+                    {% bootstrap_field form.reason %}
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-end">
+            {% bootstrap_button button_type="submit" content="Добавить визит" %}
+        </div>
     </form>
 </div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const petSelectFilter = document.querySelector('select[name="pet"]');
+        const vetSelectFilter = document.querySelector('select[name="veterinarian"]');
+        const petSelectForm = document.getElementById('id_pet'); // Предположим, что это id поля
+        const vetSelectForm = document.getElementById('id_veterinarian'); // Предположим, что это id поля
+
+        function loadVeterinarians(petId, vetSelect) {
+            if (petId) {
+                fetch(`{% url 'vets:get_veterinarians' %}?pet_id=${petId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        vetSelect.innerHTML = '<option value="">Все ветеринары</option>';
+                        data.veterinarians.forEach(vet => {
+                            const option = document.createElement('option');
+                            option.value = vet.id;
+                            option.textContent = vet.name;
+                            vetSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                vetSelect.innerHTML = '<option value="">Все ветеринары</option>';
+            }
+        }
+
+        // Подгрузка при открытии страницы для фильтрации
+        if (petSelectFilter) {
+            const initialPetIdFilter = petSelectFilter.value;
+            loadVeterinarians(initialPetIdFilter, vetSelectFilter);
+
+            // Подгрузка при изменении выбора животного для фильтрации
+            petSelectFilter.addEventListener('change', function() {
+                loadVeterinarians(this.value, vetSelectFilter);
+            });
+        }
+
+        // Подгрузка при открытии страницы для формы добавления визита
+        if (petSelectForm) {
+            const initialPetIdForm = petSelectForm.value;
+            loadVeterinarians(initialPetIdForm, vetSelectForm);
+
+            // Подгрузка при изменении выбора животного в форме добавления визита
+            petSelectForm.addEventListener('change', function() {
+                loadVeterinarians(this.value, vetSelectForm);
+            });
+        }
+    });
+</script>
+
 {% endblock content %}

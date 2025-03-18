@@ -124,7 +124,8 @@ def pet_detail(request, slug):
     health_report = generate_health_report(
             pet, diseases, available_medications,
             vaccination_schedule)
-    veterinarians = list(Veterinarian.objects.all().only('id', 'name'))
+    veterinarians = list(Veterinarian.objects.filter(
+        specialties=pet.species).only('id', 'name'))
     visits = VetVisit.objects.filter(pet=pet).select_related(
         "veterinarian").only("id", "veterinarian__name", "date", "reason")
 

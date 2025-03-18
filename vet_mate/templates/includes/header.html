@@ -21,6 +21,12 @@
             <!-- Это блок ссылок для авторизованного пользователя -->
             {% if user.is_authenticated %}
               <li class="nav-item card-sm">
+                <a class="nav-link {% if view_name == 'vets:vet_visits' %} active {% endif %}"
+                  href="{% url 'vets:vet_visits' %}">
+                  Записи на прием
+                </a>
+              </li>
+              <li class="nav-item card-sm">
                 <a class="nav-link {% if view_name == 'pets:pets_list' %} active {% endif %}"
                   href="{% url 'pets:pets_list' %}">
                   Мои животные
@@ -31,9 +37,8 @@
                   <a href="#" class="d-block link-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                     <img src="{{ user.photo.url }}" alt="mdo" width="32" height="32" class="rounded-circle">
                   </a>
-                  <ul class="dropdown-menu text-small" style="max-width: 200px;">
+                  <ul class="dropdown-menu dropdown-menu-end text-small" style="max-width: 200px;">
                     <li><a class="dropdown-item" href="{% url 'users:profile' user.username %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Профиль</a></li>
-                    <li><a class="dropdown-item" href="{% url 'vets:vet_visits' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Записи на прием</a></li>
                     <li><a class="dropdown-item" href="{% url 'password_change' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Изменить пароль</a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="{% url 'logout' %}" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">Выйти</a></li>

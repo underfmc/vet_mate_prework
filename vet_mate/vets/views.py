@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect
 import requests
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
-from vets.models import Veterinarian
+from vets.models import Veterinarian, VetVisit, Clinic
 from django.views.decorators.http import require_GET
 from geopy.distance import geodesic
-from vets.models import Clinic
 from django.http import JsonResponse
 from vets.forms import VetVisitForm
-from vets.models import VetVisit
+from pets.models import Pet
 
 YANDEX_API_KEY = settings.YANDEX_API_KEY
 
@@ -126,3 +125,13 @@ def vet_visits(request):
         'form': form,
     }
     return render(request, template_name, context)
+
+
+def get_veterinarians(request):
+    pet_id = request.GET.get('pet_id')
+    veterinarians = []
+    if pet_id:
+        pet = Pet.objects.get(id=pet_id)
+        veterinarians = Veterinarian.objects.filter(
+            specialties=pet.species).values('id', 'name')
+    return JsonResponse({'veterinarians': list(veterinarians)})

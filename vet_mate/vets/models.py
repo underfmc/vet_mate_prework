@@ -2,7 +2,7 @@ import datetime as dt
 import requests
 from django.contrib.auth import get_user_model
 from django.db import models
-from pets.models import Pet
+from pets.models import Pet, PetSpecies
 from vet_mate.settings import YANDEX_API_KEY
 
 
@@ -23,6 +23,9 @@ class Veterinarian(models.Model):
     clinic = models.ForeignKey('Clinic', on_delete=models.SET_NULL, null=True,
                                blank=True, verbose_name='Клиника',
                                related_name='veterinarians')
+    specialties = models.ManyToManyField(PetSpecies,
+                                         verbose_name='Специализации',
+                                         related_name='veterinarians')
 
     def save(self, *args, **kwargs):
         if self.address and (self.latitude is None or self.longitude is None):
@@ -72,7 +75,8 @@ class VetVisit(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.is_active:
-            self.date = dt.datetime.strptime(self.date, '%Y-%m-%d').date()
+            if isinstance(self.date, str):
+                self.date = dt.datetime.strptime(self.date, '%Y-%m-%d').date()
             if self.date >= self.date.today():
                 self.is_active = True
             else:

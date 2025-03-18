@@ -21,8 +21,8 @@ YANDEX_API_KEY = os.getenv('YANDEX_API_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'localhost',
     '127.0.0.1',
-    'localhost/'
 ]
 
 TEMPLATES_DIR = BASE_DIR / 'templates'
@@ -133,6 +133,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = 'static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
@@ -143,7 +144,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static_dev',
 ]
 
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = 'media/'
 
 MEDIA_URL = '/media/'
 

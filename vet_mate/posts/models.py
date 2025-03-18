@@ -13,6 +13,14 @@ class Category(models.Model):
         verbose_name_plural = 'Категории'
 
 
+class Tag(models.Model):
+    name = models.CharField(max_length=100, unique=True)
+    url_name = models.CharField(max_length=100, unique=True)
+
+    def __str__(self):
+        return self.name
+
+
 class Article(models.Model):
     title = models.CharField(max_length=200)
     image = models.ImageField(upload_to='posts/', null=True, blank=True)
@@ -21,6 +29,8 @@ class Article(models.Model):
                                  related_name='articles')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    author = models.CharField(max_length=100)  # Автор статьи
+    tags = models.ManyToManyField(Tag, related_name='articles')  # Теги статьи
 
     def __str__(self):
         return self.title

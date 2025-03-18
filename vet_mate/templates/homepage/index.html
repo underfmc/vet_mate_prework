@@ -3,19 +3,26 @@
 {% load static %}
 
 {% block content %}
-<title>VetMate | Главная</title>
+<title>{{ title }}</title>
+
+<style>
+  a {
+    text-decoration: none;
+  }
+</style>
+
 <section class="hero">
   <div class="container">
       <h1>Ваша семья – это вы и ваши любимцы!</h1>
       <p>Лучшие советы для счастливого ухода за питомцами</p>
       <div class="buttons">
-        <a href="#care" class="button">Узнать больше об уходе</a>
+        <a href="#categories" class="button">Узнать больше об уходе</a>
         <a href="#shop" class="button">Посмотреть товары</a>
       </div>
   </div>
 </section>
 
-<section class="categories">
+<section id="categories" class="categories">
   <div class="container">
       <h2>Основные разделы</h2>
       <div class="card-container">
@@ -49,16 +56,22 @@
   <h2>Уход</h2>
   <div class="card-container">
     <div class="card care-card">
-      <img src="{% static 'img/homepage/feeding.webp' %}" alt="Кормление">
-      <h3>Кормление</h3>
+      <a href="{% url 'posts:post_list' %}?tags=feeding">
+        <img src="{% static 'img/homepage/feeding.webp' %}" alt="Кормление">
+        <h3>Кормление</h3>
+      </a>
     </div>
     <div class="card care-card">
-      <img src="{% static 'img/homepage/grooming.webp' %}" alt="Груминг">
-      <h3>Груминг</h3>
+      <a href="{% url 'posts:post_list' %}?tags=grooming">
+        <img src="{% static 'img/homepage/grooming.webp' %}" alt="Груминг">
+        <h3>Груминг</h3>
+      </a>
     </div>
     <div class="card care-card">
-      <img src="{% static 'img/homepage/health.webp' %}" alt="Здоровье">
-      <h3>Здоровье</h3>
+      <a href="{% url 'posts:post_list' %}?tags=health">
+        <img src="{% static 'img/homepage/health.webp' %}" alt="Здоровье">
+        <h3>Здоровье</h3>
+      </a>
     </div>
   </div>
 </div>
@@ -67,18 +80,35 @@
 <section id="shop" class="shop-section">
 <div class="container">
   <h2>Магазин</h2>
-</div>
-</section>
-
-<section id="forum" class="forum-section">
-<div class="container">
-  <h2>Форум</h2>
+  <div class="card-container">
+    {% for product in products %}
+    <div class="card">
+      <a href="{% url 'shop:product_detail' product.id %}" class="card-link">
+        <img src="{{ product.image.url }}" class="card-img" alt="{{ product.name }}">
+        <h3>{{ product.name }}</h3>
+        <p>{{ product.description|truncatechars:100 }}</p>
+        <p>{{ product.price }} руб.</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 </section>
 
 <section id="vet" class="vet-section">
 <div class="container">
   <h2>Ветеринары</h2>
+  <div class="card-container">
+    {% for vet in veterinarians %}
+    <div class="card">
+      <a href="{% url 'vets:vet_detail' vet.id %}" class="card-link">
+        <img src="{{ vet.photo.url }}" class="card-img" alt="{{ vet.name }}">
+        <h3>{{ vet.name }}</h3>
+        <p>{{ vet.specialty }}</p>
+      </a>
+    </div>
+    {% endfor %}
+  </div>
 </div>
 </section>
 {% endblock %}

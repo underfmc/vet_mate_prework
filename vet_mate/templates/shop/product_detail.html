@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+<title>Детали товара</title>
+<div class="container mt-4 card">
+    <h1>{{ product.name }}</h1>
+    <div class="row">
+        <div class="col-md-3">
+            <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+        </div>
+        <div class="col-md-6 row">
+            <div class="col-md-6">
+                <h3>Описание</h3>
+                <h4>Цена: <strong>{{ product.price }}</strong></h4>
+                <p>{{ product.description }}</p>
+            </div>
+            <div class="col-md-6">
+                <p>Тип товара: <strong>{{ product.product_type }}</strong></p>
+                <p>Бренд: <strong>{{ product.brand }}</strong></p>
+            <p>Рейтинг: <strong>{{ product.rating }}</strong></p>
+                {% if product.material %}
+                <p>Материал: <strong>{{ product.material }}</strong></p>
+                {% endif %}
+                <p>Спонсор: <a href="{{ product.sponsor.website }}">{{ product.sponsor.name }}</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+    <a href="{% url 'shop:product_list' %}" class="btn btn-secondary mt-3 mt-5 mb-5">Назад к списку товаров</a>
+{% endblock %}
