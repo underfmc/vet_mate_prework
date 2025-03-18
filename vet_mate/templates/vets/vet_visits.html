@@ -10,7 +10,7 @@
     <!-- Форма для фильтрации визитов -->
     <form method="get" class="mb-4">
         <div class="row g-3">
-            <div class="col-md-4">
+            <div class="col-12 col-md-8 col-xl-6">
                 <select name="pet" class="form-select">
                     <option value="">Все животные</option>
                     {% for pet in user.pets.all %}
@@ -18,13 +18,13 @@
                     {% endfor %}
                 </select>
             </div>
-            <div class="col-md-4">
+            <div class="col-12 col-md-8 col-xl-6">
                 <select name="veterinarian" class="form-select">
                     <option value="">Все ветеринары</option>
                     <!-- Ветеринары будут динамически подгружаться через AJAX -->
                 </select>
             </div>
-            <div class="col-md-4 d-flex justify-content-end">
+            <div class="col-12 col-md-8 col-xl-6 d-flex justify-content-end">
                 <button type="submit" class="btn btn-primary">Фильтровать</button>
             </div>
         </div>
