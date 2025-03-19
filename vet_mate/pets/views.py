@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -164,6 +165,12 @@ class PetListView(LoginRequiredMixin, ListView):
         return Pet.objects.filter(user=self.request.user).select_related(
             'species')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['can_add_pet'] = (self.request.user.subscription is not None
+                                  or self.request.user.pets.count() <= 2)
+        return context
+
 
 class PetCreateView(LoginRequiredMixin, CreateView):
     model = Pet
@@ -171,6 +178,9 @@ class PetCreateView(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.user = self.request.user
+        if form.request.user.subscription is None:
+            messages.error(self.request, 'У вас нет подписки')
+            return redirect('users:create_subscription')
         return super().form_valid(form)
 
 

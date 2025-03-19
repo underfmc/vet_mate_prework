@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<title>VetMate | Подписки</title>
+<div class="container mt-4">
+    <h1 class="text-center">Подписки</h1>
+    {% if current_subscription %}
+    <div class="alert alert-info" role="alert">
+        Ваша текущая подписка: <strong>{{ current_subscription.name }}</strong>
+        {% if subscription_end_date %}
+        <br>Подписка отключится: <strong>{{ subscription_end_date|date:"d.m.Y" }}</strong>
+        {% endif %}
+    </div>
+    {% endif %}
+    <div class="row">
+        {% for subscription in object_list %}
+        <div class="col-12 col-md-6 col-xl-3 mb-4">
+            <div class="card col-12 {% if 'Профессионал' in subscription.name %}border-primary{% else %}border-secondary{% endif %}">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        {{ subscription.name }}
+                        {% if 'Профессионал' in subscription.name %}
+                        <span class="badge bg-primary">Pro</span>
+                        {% endif %}
+                    </h5>
+                    <p class="card-text">{{ subscription.description|linebreaks }}</p>
+                    <p class="card-text"><strong>Длительность:</strong> {{ subscription.duration }} дней</p>
+                    {% if current_subscription and current_subscription.pk == subscription.pk %}
+                    <button class="btn btn-secondary" disabled>Активна</button>
+                    {% elif current_subscription and current_subscription.pk != subscription.pk %}
+                    <a href="{% url 'users:create_subscription' subscription.pk %}" class="btn disabled {% if 'Профессионал' in subscription.name %}btn-primary{% else %}btn-secondary{% endif %}">{{ subscription.price }} руб.</a>
+                    {% else %}
+                    <a href="{% url 'users:create_subscription' subscription.pk %}" class="btn {% if 'Профессионал' in subscription.name %}btn-primary{% else %}btn-secondary{% endif %}">{{ subscription.price }} руб.</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,23 +1,37 @@
 {% load static %}
-<footer>
-    <div class="container">
-        <div class="footer-info">
-            <div class="footer-logo">
-                 <img src="{% static 'img/favicon/favicon_64x64.png'%}" alt="Логотип">
+<footer class="py-4">
+    <div class="container justify-content-center">
+        <div class="row justify-content-center">
+            <!-- Логотип и информация -->
+            <div class="col-12 col-md-6 col-xl-4 mb-4 mb-md-0 text-center">
+                <div class="d-flex align-items-center mb-3 justify-content-center">
+                    <img src="{% static 'img/favicon/favicon_64x64.png' %}" alt="Логотип" class="me-2" style="width: 40px;">
+                    <h5 class="mb-0">VetMate</h5>
+                </div>
+                <p class="mb-2">&copy; 2025 VetMate. Все права защищены.</p>
+                <p class="mb-2"><a href="{% url 'about:privacy' %}" class="text-decoration-none">Политика конфиденциальности</a></p>
+                <p class="mb-0"><a href="{% url 'about:terms' %}" class="text-decoration-none">Условия использования</a></p>
             </div>
-            <p>&copy; 2025 VetMate. Все права защищены.</p>
-              <p><a href="{% url 'about:privacy' %}">Политика конфиденциальности</a></p>
-              <p><a href="{% url 'about:terms' %}">Условия использования</a></p>
+
+            <!-- Контакты -->
+            <div class="col-12 col-md-6 col-xl-4 mb-4 mb-md-0 text-center">
+                <h5 class="mb-3">Контакты</h5>
+                <p class="mb-2">Телефон: +7 (999) 123-45-67</p>
+                <p class="mb-0">Email: info@vetmate.ru</p>
+            </div>
+
+            <!-- Социальные сети -->
+            <div class="col-12 col-md-6 col-xl-4 mb-4 mb-md-0 text-center">
+                <h5 class="mb-3">Мы в соцсетях</h5>
+                <div class="d-flex justify-content-center">
+                    <a href="#" class="me-3">
+                        <img src="{% static 'img/social/vk.png' %}" alt="VK" style="width: 32px;">
+                    </a>
+                    <a href="#">
+                        <img src="{% static 'img/social/telegram.png' %}" alt="Telegram" style="width: 32px;">
+                    </a>
+                </div>
+            </div>
         </div>
-         <div class="footer-contacts">
-              <h3>Контакты</h3>
-              <p>Телефон: +7 (999) 123-45-67</p>
-              <p>Email: info@vetmate.ru</p>
-        </div>
-        <div class="footer-social">
-            <h3>Мы в соцсетях</h3>
-            <a href="#"><img src="{% static 'img/social/vk.png' %}" alt="VK"></a>
-             <a href="#"><img src="{% static 'img/social/telegram.png' %}" alt="Telegram"></a>
-        </div>
-  </div>
+    </div>
 </footer>

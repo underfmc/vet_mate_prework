@@ -145,3 +145,5 @@ dmypy.json
 .history/
 
 .mypy_cache
+migrations/
+settings.py
