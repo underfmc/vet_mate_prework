@@ -12,6 +12,10 @@ User = get_user_model()
 class PetSpecies(models.Model):
     name = models.CharField(max_length=100)
 
+    class Meta:
+        verbose_name = 'Вид животного'
+        verbose_name_plural = 'Виды животных'
+
     def __str__(self):
         return self.name
 
@@ -31,6 +35,10 @@ class Breed(models.Model):
     food = models.ManyToManyField('Food', blank=True,
                                   related_name='food_for_breed')
 
+    class Meta:
+        verbose_name = 'Порода животного'
+        verbose_name_plural = 'Породы животных'
+
     def __str__(self):
         return self.name
 
@@ -39,6 +47,10 @@ class Food(models.Model):
     name = models.CharField(max_length=100, default='Не указано')
     sponsored = models.BooleanField(default=False,
                                     verbose_name='Спонсорский корм')
+
+    class Meta:
+        verbose_name = 'Корм'
+        verbose_name_plural = 'Корма'
 
     def __str__(self):
         return self.name
@@ -77,6 +89,10 @@ class Disease(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = 'Болезнь'
+        verbose_name_plural = 'Болезни'
+
 
 class Medicine(models.Model):
     name = models.CharField(max_length=255, verbose_name="Название лекарства")
@@ -87,6 +103,10 @@ class Medicine(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        verbose_name = 'Лекарство'
+        verbose_name_plural = 'Лекарства'
 
 
 class Vaccination(models.Model):
@@ -131,6 +151,7 @@ class VaccinationSchedule(models.Model):
     class Meta:
         verbose_name = 'График вакцинации'
         verbose_name_plural = 'Графики вакцинации'
+        ordering = ('-next_vaccination_date',)
 
     def calculate_schedule(self, pet):
         pet_age_weeks = (now().date() - pet.birth_date).days // 7
@@ -164,6 +185,9 @@ class VaccinationSchedule(models.Model):
                                  'next_vaccination_date'])
 
         return vaccines, [recommended, next_vaccination_date]
+
+    def __str__(self):
+        return f"График вакцинации для {self.pet.name}"
 
 
 class Pet(models.Model):
